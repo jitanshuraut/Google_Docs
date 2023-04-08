@@ -1,0 +1,258 @@
+.docs {
+    margin: 20px;
+    margin-top: 50px;
+}
+
+.changes {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+
+}
+
+.delet {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background-color: rgb(211, 211, 211);
+}
+
+.yes {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    background-color: #1a73e8;
+    padding: 5px 20px 5px 20px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+.yes_ {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    /* background-color: #1a73e8; */
+    padding: 5px 20px 5px 20px;
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+}
+
+.yes:hover {
+    transition: 0.7s;
+    background-color: white;
+    color: black;
+}
+
+.no {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    padding: 5px 20px 5px 20px;
+    border-radius: 10px;
+    background-color: white;
+    cursor: pointer;
+
+}
+
+.no:hover {
+    transition: 0.7s;
+    background-color: #1a73e8;
+    color: white;
+}
+
+.d_text {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+
+}
+
+.d_button {
+    display: flex;
+    justify-content: space-around;
+    width: 30%;
+}
+
+.save_changes {
+    width: 20%;
+    margin: 20px;
+    background-color: #1a73e8;
+    color: white;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    border-radius: 20px;
+    font-size: 15px;
+    padding: 10px;
+    cursor: pointer;
+
+}
+
+.input_name {
+    background-color: rgb(240, 240, 240);
+    width: 90%;
+    margin: auto;
+    padding: 10px;
+    margin-top: 30px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+}
+
+.input {
+    margin: 10px;
+    padding: 10px;
+    width: 80%;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+}
+
+.nav {
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: rgba(6, 24, 44, 0.3) 0px 0px 0px 2px, rgba(6, 24, 44, 0.5) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.head_box {
+    display: flex;
+    align-items: center;
+    width: 37%;
+}
+
+.heading {
+    text-align: start;
+    font-size: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    width: 100%;
+}
+
+.share {
+    display: flex;
+    width: 70%;
+}
+
+.ext_img_ {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 10px;
+
+
+}
+
+#ic {
+    color: red;
+    margin: 25px;
+    cursor: pointer;
+}
+
+#ico {
+    color: #1a73e8;
+
+    cursor: pointer;
+}
+
+.search {
+    padding: 10px;
+    width: 100%;
+    border-radius: 4px;
+    border-color: gray;
+}
+
+.search__input {
+    width: 100%;
+    padding: 16px 24px;
+
+    background-color: transparent;
+    transition: transform 250ms ease-in-out;
+    font-size: 14px;
+    line-height: 18px;
+
+    color: #575756;
+    background-color: transparent;
+    /*         background-image: url(http://mihaeltomic.com/codepen/input-search/ic_search_black_24px.svg); */
+
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 18px 18px;
+    background-position: 95% center;
+    border-radius: 50px;
+    border: 1px solid #575756;
+    transition: all 250ms ease-in-out;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+.search__input::placeholder {
+    color: rgba(87, 87, 86, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.search__input:hover,
+.search__input:focus {
+    padding: 16px 0;
+    outline: 0;
+    border: 1px solid transparent;
+    border-bottom: 1px solid #575756;
+    border-radius: 0;
+    background-position: 100% center;
+}
+
+.search_box {
+    padding: 20px;
+    width: 40%;
+}
+
+.logo {
+    width: 50px;
+    margin-left: 20px;
+    margin: 10px;
+
+}
+
+.profile {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+
+}
+
+@media only screen and (max-width: 600px) {
+    .heading {
+        font-size: 0px;
+    }
+}
+
+@media (max-width: 426px) {
+    .name {
+        font-size: 14px;
+    }
+
+    .save_changes {
+        font-size: 15px;
+    }
+
+    .delet {
+        flex-direction: column;
+    }
+
+    .d_button {
+
+        width: 80%;
+    }
+}

@@ -1,0 +1,159 @@
+.starter_box {
+    background-color: rgb(240, 240, 240);
+    width: 90%;
+    margin: auto;
+    padding: 10px;
+    margin-top: 30px;
+    border-radius: 20px;
+}
+
+.st_head {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    text-align: center;
+    font-size: 15px;
+}
+
+.edit_logo {
+    width: 13%;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.docs_img {
+    width: 150px;
+}
+
+.titel_docs {
+    background-color: #1a73e8;
+    width: 100%;
+    border-radius: 0px 0px 10px 10px;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+}
+
+h3 {
+    font-weight: 400;
+}
+
+.link_extra {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: start;
+}
+
+.titel_name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    overflow: hidden;
+    width: 100%;
+    text-align: center;
+    padding: 0px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.box_st {
+
+    display: flex;
+    justify-content: space-evenly;
+
+}
+
+.st_box {
+
+    width: 200px;
+    object-fit: contain;
+    cursor: pointer;
+    border-color: black;
+    border-width: 1px;
+}
+
+.upper_box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 98%;
+    margin: auto;
+}
+
+.float {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: end;
+
+
+}
+
+.float_box {
+    width: 80px;
+    object-fit: contain;
+    border-radius: 50%;
+    padding: 2px;
+    cursor: pointer;
+
+}
+
+.documents {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 90%;
+    margin: auto;
+    margin-top: 30px;
+}
+
+.box_docs {
+    width: 200px;
+
+    background-color: rgb(246, 248, 248);
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    cursor: pointer;
+
+}
+
+.ext_box {
+
+    width: 90%;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.docus_head {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    text-align: start;
+}
+
+@media (max-width: 426px) {
+    .documents {
+        justify-content: center;
+    }
+
+    .st_head {
+        font-size: 18px;
+    }
+
+    .docus_head {
+        font-size: 18px;
+        text-align: center;
+    }
+
+}
