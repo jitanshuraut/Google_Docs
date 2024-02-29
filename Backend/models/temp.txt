@@ -1,0 +1,40 @@
+DOCS - CURD
+USER  
+DOCS_RECENT_ACTIVITY
+DOC_VIVEWR
+
+DOCS
+ |-> DOC_ID
+ |-> USER_ID
+ |-> DOC_CONTENT
+ |-> DOC_NAME
+ |-> DOC_SIZE
+ |-> DOC_TIME_UPDATE
+ |-> DOC_UPDATE_ID
+ |-> [{PERMISSIONS,SHARE_USER_IDS}] - CURD
+ |-> CHMOD -{NONE,WRITE,PARTIAL}
+
+.-------------------------------------------------------------------------------.
+| IMPORTANT THINGS TO NOTE:                                                     |
+| 1) CURD SECURITY OF PERMISSIONS AND CHMOD (MAY VALIDATE OWNER WITH EMAIL)     |
+| 2) NOT_REGISTERD PERSON HANDLING                                              |
+.-------------------------------------------------------------------------------.
+
+
+USER_ID
+ |-> USER_ID
+ |-> USER_NAME
+ |-> USER_EMAIL
+
+DOCS_RECENT_ACTIVITY
+ |-> DOC_ID
+ |-> UPDATE_ID
+ |-> OWNER_ID/USER_ID
+ |-> [USER_ID,UPDATE_TIME,UPDATE]
+ |-> RECENT_UPDATE
+
+DOC_VIVEWR
+ |-> DOC_ID
+
+
+
