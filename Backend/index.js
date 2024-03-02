@@ -5,7 +5,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
-
+import Doc_ from "./routes/Doc_.js";
+import { Viewer } from "./controllers/Doc_Viewer.js";
 
 
 /* CONFIGURATION */
@@ -22,6 +23,9 @@ app.use(cors());
 
 
 /* MONGOOSE SETUP */
+app.use("/doc", Doc_);
+app.use("/viewer", Viewer);
+
 const PORT = process.env.PORT || 9000;
 mongoose
   .connect(process.env.MONGO_URL, {
