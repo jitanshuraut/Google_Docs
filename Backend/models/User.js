@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-
-const User_Schema = new mongoose.Schema(
+const { Schema } = mongoose;
+const User_Schema = new Schema(
   {
     User_ID: {
-      type: mongoose.Types.UUID,
+      type: String,
       required: true,
     },
     User_name: {

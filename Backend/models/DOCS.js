@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
-import Permissions from "./Permissions.js";
-const DOCSSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+const DOCSSchema = new Schema(
   {
     Doc_Id: {
-      type: mongoose.Types.UUID,
+      type: String,
       required: true,
     },
 
     User_ID: {
-      type: mongoose.Types.UUID,
+      type: String,
       required: true,
     },
     DOC_name: {
@@ -21,17 +21,15 @@ const DOCSSchema = new mongoose.Schema(
     DOC_Size: String,
     DOC_Time_Update: String,
     DOC_Update_ID: {
-      type: mongoose.Types.UUID,
+      type: String,
       required: true,
       unique: true,
     },
+    Socket_ID: String,
+
     Permissions: [
       {
         User_ID: {
-          type: String,
-          required: true,
-        },
-        User_ID_hash: {
           type: String,
           required: true,
         },

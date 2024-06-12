@@ -1,5 +1,5 @@
-import React from 'react'
-import style from "../styles/footer.module.css"
+import React from "react";
+import style from "../styles/footer.module.css";
 
 function Footer() {
   return (
@@ -12,10 +12,9 @@ function Footer() {
           <h3 className={style.footer_text}>Privacy</h3>
           <h3 className={style.footer_text}>Terms</h3>
         </div>
-
       </div>
     </>
-  )
+  );
 }
 
-export default Footer
+export default Footer;

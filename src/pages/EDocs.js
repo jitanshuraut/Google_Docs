@@ -1,34 +1,83 @@
-import React, { useState, useRef, useEffect } from 'react'
-import JoditEditor from "jodit-react";
-import styles from "../styles/docs.module.css"
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  Component,
+} from "react";
+import styles from "../styles/docs.module.css";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebase-con"
-import { collection, query, doc, updateDoc, deleteDoc, } from "firebase/firestore"
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import Modal from 'react-modal';
+import io from "socket.io-client";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import axios from "axios";
+import ReactDOM from "react-dom";
+import Modal from "react-modal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { LuShare2 } from "react-icons/lu";
 
 const customStyles = {
   content: {
-    top: '10%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    width: '50%'
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    color: "black",
   },
 };
 
-function EDocs() {
+Modal.setAppElement("#root");
+const socket = io("http://localhost:5001");
 
+function EDocs() {
   const location = useLocation();
-  const [content, setContent] = useState('')
-  const [name, setname] = useState("")
+  const { state } = location;
+  const [Email, setEmail] = useState("");
+
+  const [content, setContent] = useState(state.DOC_CONTENT);
+  const [roomId, setRoomId] = useState(state.Socket_id);
+  const [userId, setUserId] = useState(sessionStorage.getItem("User_ID"));
+  const [name, setname] = useState(state.DOC_NAME);
   let navigate = useNavigate();
-  const editor = useRef(null)
-  const [shr, setshr] = useState(false)
-const [new_eml, setnew_eml] = useState("")
+
+  useEffect(() => {
+    socket.emit("joinRoom", { roomId, userId });
+
+    socket.on("documentState", ({ content }) => {
+      setContent(content);
+    });
+
+    socket.on("documentUpdate", ({ newContent }) => {
+      setContent(newContent);
+    });
+
+    // Add event listener for window unload
+
+    return () => {
+      socket.off("documentState");
+      socket.off("documentUpdate");
+    };
+  }, []);
+
+  const update_Name = async () => {
+    try {
+      // Doc_Id, User_ID, newDocName
+      const response = await axios.put("http://localhost:5001/doc/upadtename", {
+        User_ID: userId,
+        Doc_Id: roomId,
+        newDocName: name,
+      });
+      console.log("Document updated successfully:", response.data);
+    } catch (error) {
+      console.error("Error adding document:", error);
+      throw error;
+    }
+  };
 
   let subtitle;
   const [modalIsOpen, setIsOpen] = React.useState(false);
@@ -36,154 +85,223 @@ const [new_eml, setnew_eml] = useState("")
   function openModal() {
     setIsOpen(true);
   }
-function openModal_sr(){
-  setshr(true);
-}
+
   function afterOpenModal() {
     // references are now sync'd and can be accessed.
-    subtitle.style.color = '#f00';
+    subtitle.style.color = "#f00";
   }
 
   function closeModal() {
     setIsOpen(false);
-    setshr(false)
   }
 
-  const clicked = async (id) => {
-    const new_ = { text: content, name: name }
-    const doc_ = doc(db, "content", id)
-    await updateDoc(doc_, new_)
-    navigate("/docs")
-  }
+  const [selectedOption, setSelectedOption] = useState("view-only");
 
-  const clicked_shr = async (id) => {
-    const new_ = { text: content, name: name }
-    const doc_ = doc(db, "content", id)
-    await addDoc(ref, { name: name, text: content, time: date, email:new_eml })
-    navigate("/docs")
-  }
-
-  useEffect(() => {
-    setContent(location.state.text)
-    setname(location.state.name)
-  }, [])
-
-  const delet = async (id) => {
-    const det = doc(db, "content", id);
-    await deleteDoc(det)
-    setIsOpen(false)
-    navigate("/docs")
-  }
-  const editorConfig = {
-    readonly: false,
-    toolbar: true,
-    spellcheck: true,
-    language: "en",
-    toolbarButtonSize: "medium",
-    toolbarAdaptive: false,
-    showCharsCounter: true,
-    showWordsCounter: true,
-    showXPathInStatusbar: false,
-    askBeforePasteHTML: true,
-    askBeforePasteFromWord: true,
-    //defaultActionOnPaste: "insert_clear_html",
-    uploader: {
-      insertImageAsBase64URI: true
-    },
-    width: window.innerWidth,
-    height: (window.innerHeight) / 1.5
+  const handleChange = (event) => {
+    setSelectedOption(event.target.value);
   };
 
+  const copyText = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        console.log("Text copied to clipboard!");
+        toast("Copyed to clip board", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      })
+      .catch(() => {
+        console.log("Failed to copy text");
+      });
+  };
 
+  const Share_doc = async () => {
+    try {
+      // Doc_Id, User_ID, newDocName
+      const response = await axios.post(
+        "http://localhost:5001/doc/Add_doc_permission",
+        {
+          Email: Email,
+          Doc_Id: roomId,
+        }
+      );
 
-
+      if (response.data.success) {
+        toast("Share doc done", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        console.log("Document edit done:", response.data);
+      } else {
+        toast("User not found", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding document:", error);
+      throw error;
+    }
+  };
 
   return (
     <>
-      <div className={styles.nav} >
+      <div className={styles.nav}>
         <div className={styles.head_box}>
-          <Link to="/docs" style={{ "textDecoration": "none", "color": "black", "display": "flex", "alignItems": "center", "width": "70%" }}>
+          <Link
+            to="/docs"
+            style={{
+              textDecoration: "none",
+              color: "black",
+              display: "flex",
+              alignItems: "center",
+              width: "70%",
+            }}
+          >
             <img src="/gd.png" alt="" className={styles.logo} />
-            <h1 className={styles.heading}>Google Docs /</h1></Link>
-          <input type="text" value={name} className={styles.input} onChange={(e) => {
-            setname(e.target.value)
-          }} />
-          <div className={styles.save_changes}
-            onClick={() => {
-              clicked(location.state.id)
-            }} >
-            Save
-          </div>
+            <h1 className={styles.heading}>Google Docs /</h1>
+          </Link>
+          <input
+            type="text"
+            value={name}
+            className={styles.input}
+            onChange={(e) => {
+              setname(e.target.value);
+            }}
+            onBlur={() => {
+              update_Name();
+            }}
+          />
         </div>
-
         <div className={styles.ext_img_}>
-          <i class="fa-solid fa-share-from-square fa-xl" id={styles.ico} onClick={openModal_sr}></i>
-          <i class="fa-sharp fa-solid fa-trash fa-xl" id={styles.ic} onClick={openModal} ></i>
+          {/* <i class="fa-solid fa-share-from-square fa-xl" id={styles.ico}></i>
+           */}
+          <LuShare2 id={styles.ico} onClick={openModal} />
+          <i class="fa-sharp fa-solid fa-trash fa-xl" id={styles.ic}></i>
           <Link to="/profile">
-            <img src={sessionStorage.getItem("url")} alt="" className={styles.profile} />
+            <img
+              src={sessionStorage.getItem("url")}
+              alt=""
+              className={styles.profile}
+            />
           </Link>
         </div>
-
       </div>
-      <Modal
-        isOpen={modalIsOpen}
-        onAfterOpen={afterOpenModal}
-        onRequestClose={closeModal}
-        style={customStyles}
-        contentLabel="Example Modal"
-      >
-
-        <div className={styles.delet}  >
-          <h1 className={styles.d_text}>Do you want to delet this Document </h1>
-          <div className={styles.d_button}>
-            <h3 className={styles.yes} onClick={() => { delet(location.state.id) }}>Yes</h3>
-            <h3 className={styles.no} onClick={() => {
-              setno("none")
-              setIsOpen(false)
-            }}>No</h3>
+      <div>
+        <Modal
+          isOpen={modalIsOpen}
+          onAfterOpen={afterOpenModal}
+          onRequestClose={closeModal}
+          style={customStyles}
+          className="Modal"
+          contentLabel="Example Modal"
+        >
+          <h2 id="Modal_Heading">Share Document</h2>
+          <select
+            id="mode-select"
+            value={selectedOption}
+            onChange={handleChange}
+          >
+            <option value="view-only">View Only</option>
+            <option value="edit">Edit</option>
+          </select>
+          <div>
+            {selectedOption === "view-only" && (
+              <div id="modal-link-box">
+                <p>Document Link.</p>
+                <p
+                  id="modal-link"
+                  onClick={() => {
+                    copyText("copy text");
+                  }}
+                >
+                  localhost:3000/view/doc/{roomId}
+                </p>
+              </div>
+            )}
+            {selectedOption === "edit" && (
+              <div>
+                <p>Enter Email</p>
+                <input
+                  type="text"
+                  id="model-input"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                />
+                <button
+                  id="model-send"
+                  onClick={async () => {
+                    await Share_doc();
+                    closeModal();
+                  }}
+                >
+                  Send Doc
+                </button>
+              </div>
+            )}
           </div>
-        </div>
-      </Modal>
 
-      <Modal
-        isOpen={shr}
-        onAfterOpen={afterOpenModal}
-        onRequestClose={closeModal}
-        style={customStyles}
-        contentLabel="Example Modal"
-      >
+          <button onClick={closeModal} id="modal-close">
+            close
+          </button>
+        </Modal>
+      </div>
 
-        <div className={styles.delet}  >
-          <h3 className={styles.yes_} >Email</h3>
-        <input type="text" value={new_eml} className={styles.input} onChange={(e) => {
-            setnew_eml(e.target.value)
-          }} />
-          <div className={styles.d_button}>
-            <h3 className={styles.yes} onClick={() => { clicked_shr(location.state.id) }}>Yes</h3>
-            <h3 className={styles.no} onClick={() => {
-              setno("none")
-              setshr(false)
-            }}>No</h3>
-          </div>
-        </div>
-      </Modal>
-
-
-
-
-
-      <div className={styles.docs} >
-        <JoditEditor
-          config={editorConfig}
-          value={content}
-          tabIndex={5} // tabIndex of textarea
-          onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
-          onChange={newContent => { }}
+      <div className={styles.docs}>
+        <CKEditor
+          editor={ClassicEditor}
+          data={content}
+          onReady={(editor) => {
+            console.log("Editor is ready to use!", editor);
+          }}
+          onChange={(event, editor) => {
+            const newContent = editor.getData();
+            console.log(newContent);
+            setContent(newContent);
+            socket.emit("documentChange", { roomId, userId, newContent });
+          }}
+          onBlur={(event, editor) => {
+            console.log("Blur.", editor);
+          }}
+          onFocus={(event, editor) => {
+            console.log("Focus.", editor);
+          }}
         />
       </div>
-
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
-  )
+  );
 }
 
-export default EDocs
+export default EDocs;

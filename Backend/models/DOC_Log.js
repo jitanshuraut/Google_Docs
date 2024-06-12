@@ -21,6 +21,10 @@ const DOCS_Log_Schema = new mongoose.Schema(
           type: String,
           required: true,
         },
+        Difference:{
+          type: String,
+          required: true,
+        }
       },
     ],
     Time_Log_last: String,

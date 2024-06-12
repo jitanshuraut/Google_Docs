@@ -33,6 +33,10 @@
   justify-content: center;
 }
 
+.ck-editor__editable_inline {
+  min-height: 500px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -140,7 +144,7 @@ div.footer {
   border-radius: 20px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #f9690E;
+  color: #f9690e;
   box-shadow: 0px 5px 45px rgba(249, 105, 14, 0.4);
   border: 1px solid transparent;
   transition: all 0.5s ease-in;
@@ -149,7 +153,7 @@ div.footer {
 .btn-follow:hover {
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: #f9690E;
+  background: #f9690e;
   color: rgba(255, 255, 255, 1);
 }
 
@@ -195,7 +199,62 @@ div.footer {
   }
 }
 
+.Modal {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  color: black;
+  padding: 20px;
+  min-height: 200px;
+  min-width: 350px;
+}
 
+#Modal_Heading {
+  color: black;
+  font-weight: 500;
+}
+#mode-select {
+  width: 350px;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+#modal-close {
+  padding: 5px;
+  background-color: white;
+  color: black;
+  font-size: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+#modal-link-box {
+  text-align: start;
+}
+#modal-link {
+  padding: 10px;
+  width: 350px;
+  border-radius: 12px;
+  background-color: #282c34;
+  color: white;
+  cursor: pointer;
+}
+
+#model-input {
+  width: 100%;
+  padding: 10px;
+}
+
+#model-send {
+  padding: 10px;
+  background-color: #4286f3;
+  color: white;
+  border-radius: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
 
 /* transform-origin: left top;
  animation: swing 2s ease-in forwards;
