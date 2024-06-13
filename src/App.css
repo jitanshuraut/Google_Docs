@@ -209,6 +209,8 @@ div.footer {
   padding: 20px;
   min-height: 200px;
   min-width: 350px;
+  border: 1px solid black;
+  border-radius: 10px;
 }
 
 #Modal_Heading {

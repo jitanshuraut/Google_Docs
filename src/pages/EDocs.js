@@ -27,23 +27,32 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
-    color: "black",
   },
 };
 
 Modal.setAppElement("#root");
-const socket = io("http://localhost:5001");
 
 function EDocs() {
+  const socket = io("http://localhost:5001");
   const location = useLocation();
   const { state } = location;
   const [Email, setEmail] = useState("");
-
-  const [content, setContent] = useState(state.DOC_CONTENT);
-  const [roomId, setRoomId] = useState(state.Socket_id);
-  const [userId, setUserId] = useState(sessionStorage.getItem("User_ID"));
-  const [name, setname] = useState(state.DOC_NAME);
   let navigate = useNavigate();
+
+  const error_ = {
+    error_: "Please Login",
+  };
+
+  useEffect(() => {
+    if (!state?.Socket_id) {
+      navigate("/", { state: { error: "Document content not found" } });
+    }
+  }, [state, navigate]);
+
+  const [content, setContent] = useState(state?.DOC_CONTENT || "");
+  const [roomId, setRoomId] = useState(state?.Socket_id || "");
+  const [userId, setUserId] = useState(sessionStorage.getItem("User_ID"));
+  const [name, setname] = useState(state?.DOC_NAME || "");
 
   useEffect(() => {
     socket.emit("joinRoom", { roomId, userId });
@@ -59,10 +68,19 @@ function EDocs() {
     // Add event listener for window unload
 
     return () => {
-      socket.off("documentState");
-      socket.off("documentUpdate");
+      socket.disconnect();
     };
-  }, []);
+  }, [navigate, location.state, userId, roomId, socket]);
+  useEffect(() => {
+    const handleUnload = () => {
+      socket.disconnect();
+    };
+
+    window.addEventListener("beforeunload", handleUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload);
+    };
+  }, [socket]);
 
   const update_Name = async () => {
     try {
@@ -128,8 +146,9 @@ function EDocs() {
       const response = await axios.post(
         "http://localhost:5001/doc/Add_doc_permission",
         {
-          Email: Email,
+          Rec_Email: Email,
           Doc_Id: roomId,
+          Sed_User_Id: userId,
         }
       );
 
@@ -262,7 +281,7 @@ function EDocs() {
           </div>
 
           <button onClick={closeModal} id="modal-close">
-            close
+            done
           </button>
         </Modal>
       </div>

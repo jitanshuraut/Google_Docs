@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import style from "../styles/Home.module.css";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase-con";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Home() {
+  const location = useLocation();
+  const { state } = location;
+
   const provider = new GoogleAuthProvider();
   let navigate = useNavigate();
   const signInWithGoogle = async () => {
@@ -44,6 +49,21 @@ function Home() {
     await Save_User();
     navigate("../extra");
   };
+
+  useEffect(() => {
+    if (state?.error_ !== null) {
+      toast("Please Login to you Account", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -143,6 +163,18 @@ function Home() {
       </div>
       <hr />
       <Footer />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   );
 }

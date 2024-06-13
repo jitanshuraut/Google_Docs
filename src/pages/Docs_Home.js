@@ -27,6 +27,12 @@ function Docs_Home() {
 
   useEffect(() => {
     const User_ID = sessionStorage.getItem("User_ID");
+    if (!User_ID) {
+      const error_ = {
+        error_: "Please Login",
+      };
+      navigate("/", { state: error_ });
+    }
     console.log("User_ID:", User_ID);
     getAllDocs(User_ID)
       .then((docs) => {
@@ -61,7 +67,9 @@ function Docs_Home() {
 
   const edit_doc = async (Doc_Id) => {
     try {
-      const response = await axios.get(`http://localhost:5001/doc/Get_Doc/${Doc_Id}`);
+      const response = await axios.get(
+        `http://localhost:5001/doc/Get_Doc/${Doc_Id}`
+      );
       console.log("Document added successfully:", response.data);
 
       const Doc_data = {
@@ -69,8 +77,8 @@ function Docs_Home() {
         DOC_NAME: response.data.DOC_name,
         DOC_CONTENT: response.data.DOC_Content,
       };
-      console.log("Logging Document data")
-      console.log(Doc_data)
+      console.log("Logging Document data");
+      console.log(Doc_data);
       navigate("edit", { state: Doc_data });
     } catch (error) {
       console.error("Error adding document:", error);
@@ -157,9 +165,12 @@ function Docs_Home() {
       <div className={style.documents}>
         {file.map((user) => {
           return (
-            <div className={style.box_docs} onClick={()=>{
-              edit_doc(user.Doc_Id)
-            }}>
+            <div
+              className={style.box_docs}
+              onClick={() => {
+                edit_doc(user.Doc_Id);
+              }}
+            >
               <h3 className={style.titel_time}>
                 {time_conv(user.DOC_Time_Update)}
               </h3>

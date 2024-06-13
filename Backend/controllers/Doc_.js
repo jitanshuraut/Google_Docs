@@ -6,7 +6,9 @@ import { getSizeOfText } from "./Functions/Text_Size.js";
 import DOCS_Log from "../models/DOC_Log.js";
 import { checker } from "./Functions/DOC_permissions_checker.js";
 import dotenv from "dotenv";
+import { Resend } from "resend";
 dotenv.config();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * Test_User function to add a user to the database.
@@ -113,12 +115,15 @@ export const Add_DOC = async (req, res) => {
  */
 export const Add_DOC_permissions = async (req, res) => {
   try {
-    const { Email, Doc_Id } = req.body;
+    const { Rec_Email, Doc_Id, Sed_User_Id } = req.body;
 
-    const user_ = await user.findOne({ Email: Email });
+    const user_ = await user.findOne({ Email: Rec_Email });
+    const doc = await DOCS.findOne({ Doc_Id: Doc_Id });
+    console.log(user_);
 
-    if (user_) {
+    if (user_ && doc.User_ID == Sed_User_Id) {
       console.log("User_ID:", user_.User_ID);
+      const user_sender = await user.findOne({ User_ID: Sed_User_Id });
       // return user.User_ID;
 
       const DOC_permissions = await DOCS.findOneAndUpdate(
@@ -133,6 +138,66 @@ export const Add_DOC_permissions = async (req, res) => {
         },
         { new: true }
       );
+      const doc_name_email = doc.DOC_name;
+      const sender_email = user_sender.Email;
+      const html_cont = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Collaboration Invitation</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; }
+        .header { background-color: #0073e6; color: white; padding: 10px; text-align: center; border-radius: 5px 5px 0 0; }
+        .content { padding: 20px; }
+        .footer { padding: 10px; text-align: center; color: #555; font-size: 0.9em; }
+        .button { 
+       display: inline-block; 
+       padding: 10px 20px; 
+       margin-top: 20px; 
+       background-color: #0073e6; 
+       color: white; 
+       text-decoration: none; 
+       border-radius: 5px; 
+    }
+    .button:hover {
+      background-color: #005aa8; /* Darker shade on hover */
+    }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to Google Docs Collaboration!</h1>
+        </div>
+        <div class="content">
+          <p>Hi ,</p>
+          <p>We're excited to inform you that <strong>${sender_email}</strong> has added you as a collaborator on the document titled <strong>"${doc_name_email}"</strong>.</p>
+          <p>This means you can now work together in real-time to create and edit content seamlessly.</p>
+          <p>To get started, simply click the button below to open the document and begin collaborating:</p>
+          <p style="text-align: center; ">
+            <a href="http://localhost:3000" class="button">Open Document</a>
+          </p>
+          <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team.</p>
+          <p>Happy collaborating!</p>
+          <p>Best regards,</p>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} . All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>`;
+      const { data, error } = await resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: Rec_Email,
+        subject: `Document ${DOC_permissions.DOC_name}  Share with you`,
+        html: html_cont,
+      });
+      console.log("Resend");
+      console.log(data);
+      console.log(error);
 
       res.status(200).json({ success: true });
       console.log("DOC_permissions added successfully", DOC_permissions);
@@ -195,6 +260,9 @@ export const Get_All_DOC = async (req, res) => {
       DOC_Content: doc.DOC_Content,
     }));
     filteredDocs.push(...shareDocsArray);
+    filteredDocs.sort(
+      (a, b) => new Date(b.DOC_Time_Update) - new Date(a.DOC_Time_Update)
+    );
     res.status(200).json(filteredDocs);
     console.log("Successfully retrieved documents", Get_DOC);
   } catch (error) {
