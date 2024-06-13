@@ -6,6 +6,7 @@ import {
   Delete_DOC,
   Get_All_DOC,
   Get_DOC,
+  Query_Doc,
   Test_User,
   Update_DOC,
   Update_DOC_Name,
@@ -22,6 +23,7 @@ router.post("/Update_Doc", Update_DOC);
 router.post("/Delete_DOC", Delete_DOC);
 router.get("/All_Doc/:User_ID", Get_All_DOC);
 router.put("/upadtename",Update_DOC_Name);
+router.get("/Search",Query_Doc)
 
 
 

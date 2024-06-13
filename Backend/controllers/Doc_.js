@@ -368,3 +368,27 @@ export const Delete_DOC = async (req, res) => {
     res.status(503).json("Server Error");
   }
 };
+
+export const Query_Doc = async (req, res) => {
+  const { User_ID, query } = req.query;
+
+  if (!User_ID || !query) {
+    return res.status(400).send("UserId and query are required");
+  }
+
+  try {
+    const documents = await DOCS.find({
+      User_ID: User_ID,
+      DOC_name: { $regex: query, $options: "i" }, // Case-insensitive search
+    });
+
+    const shareDocsArray = documents.map((shareDoc) => ({
+      Doc_Id: shareDoc.Doc_Id,
+      DOC_name: shareDoc.DOC_name,
+      DOC_Content: shareDoc.DOC_Content,
+    }));
+    res.send(shareDocsArray);
+  } catch (err) {
+    res.status(500).send("Error searching documents");
+  }
+};
