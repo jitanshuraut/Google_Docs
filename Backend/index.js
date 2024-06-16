@@ -10,6 +10,15 @@ import { Viewer } from "./controllers/Doc_Viewer.js";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import DOCS from "./models/DOCS.js";
+import { createClient } from "redis";
+
+const client = createClient();
+
+client.on("error", (err) => console.log("Redis Client Error", err));
+
+(async () => {
+  await client.connect();
+})();
 
 const app = express();
 const server = createServer(app);
@@ -129,6 +138,11 @@ io.on("connection", (socket) => {
       console.log(`User ${userId} disconnected from room ${roomId}`);
 
       // Save document data to database when user disconnects
+      const exists = await client.hExists("User_ID:Get_All_Docs", userId);
+
+      if (exists) {
+        await client.hDel("User_ID:Get_All_Docs", userId);
+      }
       await DOCS.findOneAndUpdate(
         { Socket_ID: roomId },
         {
@@ -196,3 +210,5 @@ mongoose
     server.listen(PORT, () => console.log(`Server Port: ${PORT}`));
   })
   .catch((error) => console.log(`${error} did not connect`));
+
+export { client };

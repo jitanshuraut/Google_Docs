@@ -1,12 +1,12 @@
 import user from "../models/User.js";
 import DOCS from "../models/DOCS.js";
 import { v4 as uuidv4 } from "uuid";
-import { stringify as uuidStringify } from "uuid";
 import { getSizeOfText } from "./Functions/Text_Size.js";
 import DOCS_Log from "../models/DOC_Log.js";
 import { checker } from "./Functions/DOC_permissions_checker.js";
 import dotenv from "dotenv";
 import { Resend } from "resend";
+import { client } from "./../index.js";
 dotenv.config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -73,6 +73,12 @@ export const Add_DOC = async (req, res) => {
   var Doc_Id_V4 = uuidv4();
   try {
     const { USER_ID, DOC_CONTENT, DOC_NAME } = req.body;
+    const redisData = await client.hGet("User_ID:Get_All_Docs", USER_ID);
+
+    let parsedData = [];
+    if (redisData) {
+      parsedData = JSON.parse(redisData);
+    }
 
     const DOC_ = await DOCS.create({
       Doc_Id: Doc_Id_V4,
@@ -98,6 +104,15 @@ export const Add_DOC = async (req, res) => {
       { new: true }
     );
     console.log(DOC_permissions);
+    parsedData.push(DOC_);
+
+    await client.hSet(
+      "User_ID:Get_All_Docs",
+      USER_ID,
+      JSON.stringify(parsedData),
+      "EX",
+      600
+    );
 
     res.status(200).json(DOC_);
     console.log("DOC_ added successfully", DOC_);
@@ -237,6 +252,13 @@ export const Get_All_DOC = async (req, res) => {
   try {
     const { User_ID } = req.params;
     console.log(User_ID);
+    const redisData = await client.hGet("User_ID:Get_All_Docs", User_ID);
+
+    let parsedData;
+    if (redisData) {
+      parsedData = JSON.parse(redisData);
+      return res.status(200).json(parsedData);
+    }
     const Get_DOC = await DOCS.find({ User_ID });
 
     const Share_doc = await DOCS.find({
@@ -260,8 +282,18 @@ export const Get_All_DOC = async (req, res) => {
       DOC_Content: doc.DOC_Content,
     }));
     filteredDocs.push(...shareDocsArray);
-    filteredDocs.sort(
-      (a, b) => new Date(b.DOC_Time_Update) - new Date(a.DOC_Time_Update)
+    filteredDocs.sort((a, b) => {
+      const dateA = new Date(a.DOC_Time_Update);
+      const dateB = new Date(b.DOC_Time_Update);
+      return dateB - dateA;
+    });
+    const filteredDocsJSON = JSON.stringify(filteredDocs);
+    await client.hSet(
+      "User_ID:Get_All_Docs",
+      User_ID,
+      filteredDocsJSON,
+      "EX",
+      600
     );
     res.status(200).json(filteredDocs);
     console.log("Successfully retrieved documents", Get_DOC);
@@ -285,6 +317,24 @@ export const Update_DOC_Name = async (req, res) => {
       return res.status(404).json({ message: "Document not found" });
     }
 
+    const redisData = await client.hGet("User_ID:Get_All_Docs", User_ID);
+
+    let parsedData = [];
+    if (redisData) {
+      parsedData = JSON.parse(redisData);
+      const index = parsedData.findIndex(
+        (doc) => doc.Doc_Id === updatedDoc.Doc_Id
+      );
+      if (index !== -1) {
+        parsedData[index] = updatedDoc;
+      }
+    }
+
+    await client.hSet(
+      "User_ID:Get_All_Docs",
+      User_ID,
+      JSON.stringify(parsedData)
+    );
     res.status(200).json("updated name");
   } catch (error) {
     console.error("Error updating document name", error);
@@ -377,6 +427,14 @@ export const Query_Doc = async (req, res) => {
   }
 
   try {
+    const redisKey = `UserDocs:${User_ID}:${query}`;
+    const cachedData = await client.get(redisKey);
+
+    if (cachedData) {
+      const documents = JSON.parse(cachedData);
+      return res.status(200).json(documents);
+    }
+
     const documents = await DOCS.find({
       User_ID: User_ID,
       DOC_name: { $regex: query, $options: "i" }, // Case-insensitive search
@@ -387,6 +445,9 @@ export const Query_Doc = async (req, res) => {
       DOC_name: shareDoc.DOC_name,
       DOC_Content: shareDoc.DOC_Content,
     }));
+
+    await client.set(redisKey, JSON.stringify(shareDocsArray), "EX", 60);
+
     res.send(shareDocsArray);
   } catch (err) {
     res.status(500).send("Error searching documents");

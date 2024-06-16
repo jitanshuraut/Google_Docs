@@ -85,6 +85,7 @@ function EDocs() {
   const update_Name = async () => {
     try {
       // Doc_Id, User_ID, newDocName
+      console.log(name);
       const response = await axios.put("http://localhost:5001/doc/upadtename", {
         User_ID: userId,
         Doc_Id: roomId,
