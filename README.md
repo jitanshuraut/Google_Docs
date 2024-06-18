@@ -6,7 +6,7 @@
 
 
 
-# ```🔷Screen Short ```
+# ```🔷Screenshot ```
 
 ![Web capture_28-8-2022_111945_localhost](https://user-images.githubusercontent.com/96559286/187059940-de47292b-b1af-428b-8236-7ab85928d672.jpeg)
 <img width="947" alt="Screenshot 2023-04-08 103858" src="https://user-images.githubusercontent.com/96559286/230704925-ef24ae97-20f3-45a5-b3b6-1e6b08f37e5e.png">
@@ -29,11 +29,10 @@
 🌟. Integrate Grammer Checking system
 ```
 
-### 🛠libraries used:
+### 🛠 Tech used:
 ```
-1. React Js AS Frontend
-
-2. FrieBase AS Backend
+1.  MERN
+2.  Redis 
 
 ```
 
